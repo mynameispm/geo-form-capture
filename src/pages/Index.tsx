@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MapPin, Check } from "lucide-react";
+import { MapPin, Check, List } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 import GoogleMapComponent from "@/components/GoogleMapComponent";
 import GeotaggedImageUpload from "@/components/GeotaggedImageUpload";
@@ -95,6 +95,14 @@ const Index = () => {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-primary mb-2">Milaan Location-Based Form</h1>
           <p className="text-muted-foreground">Submit your information with precise location data</p>
+          <div className="mt-4">
+            <Link to="/problems">
+              <Button variant="outline" className="gap-2">
+                <List className="h-4 w-4" />
+                Browse Community Problems
+              </Button>
+            </Link>
+          </div>
         </div>
 
         <div className="grid gap-8 md:grid-cols-2">
