@@ -1,12 +1,14 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { MapPin, Check, List } from "lucide-react";
+import { List } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 import GoogleMapComponent from "@/components/GoogleMapComponent";
 import GeotaggedImageUpload from "@/components/GeotaggedImageUpload";
+import LocationForm from "@/components/LocationForm";
+import ResultsDisplay from "@/components/ResultsDisplay";
+import LocationInfoSection from "@/components/LocationInfoSection";
 
 const Index = () => {
   // State variables
@@ -71,24 +73,6 @@ const Index = () => {
     }
   };
 
-  // Handle form submission
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    
-    if (!name.trim()) {
-      toast.error("Please enter your name");
-      return;
-    }
-
-    setShowResults(true);
-    
-    // In a real application, you might send this data to a server
-    console.log("Form submitted with:", {
-      name,
-      location: locationCaptured ? { latitude, longitude } : null,
-    });
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary/5 to-secondary/10">
       <div className="max-w-4xl mx-auto px-4 py-12">
@@ -106,57 +90,17 @@ const Index = () => {
         </div>
 
         <div className="grid gap-8 md:grid-cols-2">
-          <div className="bg-card rounded-xl shadow-lg p-6 border border-border/50">
-            {/* Status indicator */}
-            <div className={`mb-6 p-3 rounded-lg flex items-center justify-center gap-2 ${
-              locationCaptured ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'
-            }`}>
-              {locationCaptured ? (
-                <Check className="h-5 w-5" />
-              ) : (
-                <MapPin className="h-5 w-5 animate-pulse" />
-              )}
-              <p className="text-sm font-medium">{locationStatus}</p>
-            </div>
-
-            {/* Form */}
-            <form onSubmit={handleSubmit}>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Your Name</Label>
-                  <Input 
-                    id="name" 
-                    name="name" 
-                    placeholder="Enter your name" 
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required 
-                  />
-                </div>
-
-                {/* Hidden fields for coordinates */}
-                <input type="hidden" id="latitude-field" name="latitude" value={latitude || ''} />
-                <input type="hidden" id="longitude-field" name="longitude" value={longitude || ''} />
-
-                <Button type="submit" className="w-full" disabled={!locationCaptured}>
-                  {locationCaptured ? 'Submit Form' : 'Waiting for Location...'}
-                </Button>
-              </div>
-            </form>
-
-            {/* Results display */}
-            {showResults && (
-              <div className="mt-8 p-4 bg-green-50 rounded-lg border border-green-100">
-                <h2 className="text-xl font-semibold mb-2 text-green-800">Form Submission Summary</h2>
-                <p className="mb-1"><span className="font-medium">Name:</span> {name}</p>
-                <p><span className="font-medium">Location:</span> {locationCaptured ? 
-                  `${latitude?.toFixed(6)}, ${longitude?.toFixed(6)}` : 
-                  "Location not available"}
-                </p>
-              </div>
-            )}
-          </div>
-
+          {/* Form Component */}
+          <LocationForm 
+            name={name}
+            setName={setName}
+            latitude={latitude}
+            longitude={longitude}
+            locationStatus={locationStatus}
+            locationCaptured={locationCaptured}
+            setShowResults={setShowResults}
+          />
+          
           {/* Map Component */}
           <div className="bg-card rounded-xl shadow-lg overflow-hidden border border-border/50 min-h-[400px]">
             <GoogleMapComponent 
@@ -167,6 +111,15 @@ const Index = () => {
           </div>
         </div>
         
+        {/* Results Display */}
+        <ResultsDisplay 
+          show={showResults}
+          name={name}
+          locationCaptured={locationCaptured}
+          latitude={latitude}
+          longitude={longitude}
+        />
+        
         {/* Image upload with geolocation */}
         <div className="mt-8">
           <GeotaggedImageUpload 
@@ -176,37 +129,8 @@ const Index = () => {
           />
         </div>
         
-        {/* Additional information section */}
-        <div className="mt-12 bg-card rounded-xl shadow-lg overflow-hidden border border-border/50">
-          <div className="bg-primary/10 p-4">
-            <h2 className="text-xl font-semibold text-primary">About Location-Based Services</h2>
-          </div>
-          <div className="p-6 space-y-4">
-            <p className="text-muted-foreground">
-              Location-based services (LBS) are software services that use geographic data to provide information
-              or functionality to users. LBS applications use real-time geodata from a mobile device or smartphone
-              to provide information, entertainment, or security.
-            </p>
-            
-            <div className="grid gap-4 sm:grid-cols-2 mt-6">
-              <div className="bg-muted/20 p-4 rounded-lg border border-border/50">
-                <h3 className="text-lg font-medium mb-2">Privacy Considerations</h3>
-                <p className="text-sm text-muted-foreground">
-                  Your location data is handled securely and only used for the purpose you've explicitly approved. 
-                  We do not store or share your location data without your consent.
-                </p>
-              </div>
-              
-              <div className="bg-muted/20 p-4 rounded-lg border border-border/50">
-                <h3 className="text-lg font-medium mb-2">How It Works</h3>
-                <p className="text-sm text-muted-foreground">
-                  This application uses your device's GPS sensor or network-based location methods to determine your 
-                  current geographic coordinates (latitude and longitude).
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Information section */}
+        <LocationInfoSection />
       </div>
     </div>
   );
