@@ -8,6 +8,7 @@ interface GoogleMapComponentProps {
   locationCaptured: boolean;
 }
 
+// Declare Google Maps types to fix TS errors
 declare global {
   interface Window {
     google: any;
@@ -17,8 +18,8 @@ declare global {
 
 const GoogleMapComponent = ({ latitude, longitude, locationCaptured }: GoogleMapComponentProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstance = useRef<google.maps.Map | null>(null);
-  const markerRef = useRef<google.maps.Marker | null>(null);
+  const mapInstance = useRef<any>(null);
+  const markerRef = useRef<any>(null);
 
   useEffect(() => {
     // Load Google Maps script
